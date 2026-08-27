@@ -460,9 +460,8 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     </div>
     <div class="vbox">
       <h3>Distributor · Robinhood Chain · HMM out</h3>
-      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
-      <p>Every HMM that reaches a holder leaves this address. What sits here plus
-      what has been paid equals everything ever bought.</p>
+      <span class="addr" style="color:var(--ink-35);border:0">Deployed before the first distribution</span>
+      <p>Not deployed yet. It goes up before the first payout, and every HMM that reaches a holder will leave this address. What sits here plus what has been paid will equal everything ever bought.</p>
     </div>
     <div class="vbox">
       <h3>BMM token · Base</h3>
@@ -471,7 +470,7 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     </div>
     <div class="vbox">
       <h3>HMM token · Robinhood Chain</h3>
-      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
+      <a class="addr" href="https://robinhoodchain.blockscout.com/token/0x7FE995a80075dF3Dc8Ae11A9b82c7FE4202CD87f" target="_blank" rel="noopener">0x7FE995a80075dF3Dc8Ae11A9b82c7FE4202CD87f</a>
       <p>Not our token. BMM holds no authority over HMM and never touches its supply.</p>
     </div>
   </div>
@@ -496,7 +495,7 @@ var CONFIG = {
   treasury:  '0xD795eB3C59718f615E13a9d1BF7C8bf4F1F5A73B',   // Base wallet, holds the pot
   distributor:'0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A',  // RH contract, pushes HMM
   bmm:       '0x3c9831aaa34ffbd84d9956ac050ba347cdebdba3',   // Base
-  hmm:       '0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14',   // RH
+  hmm:       '0x7FE995a80075dF3Dc8Ae11A9b82c7FE4202CD87f',   // Thinking Cat, RH chain 4663
   baseRpc:   'https://mainnet.base.org',
   links: {
     buy:   '',   // launchpad or Uniswap link for BMM
@@ -504,7 +503,7 @@ var CONFIG = {
     x:     'https://x.com/basedhmmcat',
     repo:  ''    // https://github.com/nuelprime/...
   },
-  rhRpc:     '',                    // Robinhood Chain RPC
+  rhRpc:     'https://rpc.mainnet.chain.robinhood.com',   // chain 4663, rate-limited
   launched: true,
   // null renders as an em dash. counters are 0 because 0 is true.
   live: { pot:0, priceHmm:null, hmmUsd:null, bmmUsd:null, mcap:null,
