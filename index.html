@@ -509,7 +509,10 @@ var CONFIG = {
   // null renders as an em dash. counters are 0 because 0 is true.
   live: { pot:0, priceHmm:null, hmmUsd:null, bmmUsd:null, mcap:null,
           chg24:null, paid:0, hmmTotal:0, holders:0, ethTotal:0 },
-  epochs: []   // push {epoch,block,eth,hmm,holders,tx} per distribution
+  poolId:  '',       // bytes32 poolId, from the Bankr deploy response
+  pollMs:  45000,    // bankr asks for no more than one poll per 30s
+  // newest first. push one per distribution and the ledger + counters follow.
+  epochs: []   // {epoch, block, eth, hmm, holders, tx}
 };
 
 /* TO GO LIVE, replace CONFIG.mock with three reads:
@@ -554,14 +557,22 @@ var CONFIG = {
   if (chg) { chg.textContent = dash(L.chg24);
     if (L.chg24) chg.className = (String(L.chg24).charAt(0) === '-') ? 'dn' : 'up'; }
 
-  put('stPaid', L.paid); put('stHolders', L.holders);
-  put('stHmm', L.hmmTotal); put('stEth', L.ethTotal);
-  put('hdrStatus', CONFIG.launched ? ('Running · ' + (L.paid || 0) + ' paid') : 'Not launched');
+  // all derived from CONFIG.epochs so there is one source of truth
+  var EP = CONFIG.epochs || [];
+  function num(v){ return parseFloat(String(v == null ? 0 : v).replace(/,/g, '')) || 0; }
+  function comma(n){ return n.toLocaleString('en-US'); }
+  var paidN   = EP.length;
+  var sumEth  = EP.reduce(function(a, e){ return a + num(e.eth); }, 0);
+  var sumHmm  = EP.reduce(function(a, e){ return a + num(e.hmm); }, 0);
+  var lastHld = paidN ? num(EP[0].holders) : 0;
 
-  var POT = L.pot || 0, THRESHOLD = CONFIG.threshold;
-  put('dlPot', POT.toFixed(2));
-  put('dlOf',  'ETH OF ' + THRESHOLD.toFixed(2) + ' FULL');
-  put('dlSub', Math.round(Math.min(POT / THRESHOLD, 1) * 100) + '% · ' + (L.paid || 0) + ' PAID');
+  put('stPaid', paidN);
+  put('stHolders', comma(lastHld));
+  put('stHmm', comma(Math.round(sumHmm)));
+  put('stEth', sumEth ? sumEth.toFixed(2) : 0);
+  put('hdrStatus', CONFIG.launched ? ('Running · ' + paidN + ' paid') : 'Not launched');
+
+  var THRESHOLD = CONFIG.threshold;
   var bImg = document.getElementById('bannerImg');
   var bBox = bImg.parentNode;
   if (CONFIG.banner) {
@@ -571,25 +582,116 @@ var CONFIG = {
   } else {
     bBox.classList.add('no-img');
   }
-  var pct = Math.min(POT / THRESHOLD, 1);
   var R = 176, C = 2 * Math.PI * R;
   var arc = document.getElementById('potArc');
-  if (pct <= 0) {
-    arc.style.display = 'none';   // an empty pot must draw nothing
-  } else {
-    // inline beats .drawable, which would read --len:0 as "solid ring"
-    arc.style.strokeDasharray = (C * pct).toFixed(1) + ' ' + C.toFixed(1);
-    arc.style.setProperty('--len', (C * pct).toFixed(1));
-    if (reduce){ arc.style.strokeDashoffset = 0; arc.style.animation = 'none'; }
-  }
-
-  /* ---- dial: pointer tracks the arc edge ---- */
   var needle = document.getElementById('needle');
   needle.style.transition = reduce ? 'none' : 'transform 1.3s cubic-bezier(.22,1,.36,1)';
   needle.style.transform = 'rotate(0deg)';
-  requestAnimationFrame(function(){
-    needle.style.transform = 'rotate(' + (pct * 360).toFixed(2) + 'deg)';
-  });
+
+  // small pots need more decimals or 0.004 ETH renders as 0.00
+  function fmtEth(v){
+    return v >= 1 ? v.toFixed(2) : v >= 0.01 ? v.toFixed(3) : v.toFixed(4);
+  }
+
+  // null means "not known", which must not look like an empty pot
+  function setPot(v){
+    var known = (v !== null && v !== undefined && isFinite(v));
+    var pot = known ? v : 0;
+    var pct = Math.min(pot / THRESHOLD, 1);
+
+    put('dlPot', known ? fmtEth(pot) : '—');
+    put('dlOf',  'ETH OF ' + THRESHOLD.toFixed(2) + ' FULL');
+    put('dlSub', !known ? ('READ FAILED · ' + paidN + ' PAID')
+      : pct >= 1 ? ('FULL · READY · ' + paidN + ' PAID')
+      : (Math.round(pct * 100) + '% · ' + paidN + ' PAID'));
+
+    if (pct <= 0) {
+      arc.style.display = 'none';   // an empty pot must draw nothing
+    } else {
+      arc.style.display = '';
+      // inline beats .drawable, which would read --len:0 as "solid ring"
+      arc.style.strokeDasharray = (C * pct).toFixed(1) + ' ' + C.toFixed(1);
+      arc.style.setProperty('--len', (C * pct).toFixed(1));
+      if (reduce){ arc.style.strokeDashoffset = 0; arc.style.animation = 'none'; }
+    }
+    requestAnimationFrame(function(){
+      needle.style.transform = 'rotate(' + (pct * 360).toFixed(2) + 'deg)';
+    });
+  }
+
+  setPot(CONFIG.launched ? null : 0);   // pre-launch the pot really is 0
+
+  /* ================= live pot =================
+     pot = unclaimed fees in Bankr's escrow + ETH already in the treasury.
+     Summing both makes claiming invisible here: value moves from one read to
+     the other and the total doesn't flinch.                                */
+
+  var BANKR = 'https://api.bankr.bot/public/doppler';
+  var isAddr = function(a){ return /^0x[a-fA-F0-9]{40}$/.test(a || ''); };
+
+  // WETH can be token0 or token1 depending on address sort order. Picking the
+  // wrong leg gives a plausible but completely wrong number.
+  function ethLeg(fees, l0, l1){
+    if (/^w?eth$/i.test(l0 || '')) return parseFloat(fees.token0);
+    if (/^w?eth$/i.test(l1 || '')) return parseFloat(fees.token1);
+    return parseFloat(fees.token0);
+  }
+
+  // {ok:false} = read failed. {ok:true, v:0} = really zero. Conflating those
+  // silently under-reports the pot, which is the bug this section exists for.
+  function readClaimable(){
+    return fetch(BANKR + '/claimable-fees/' + CONFIG.bmm + '?beneficiary=' + CONFIG.treasury)
+      .then(function(r){
+        // 4xx = bankr has no fee record for this token yet, a real zero.
+        // only 5xx / network failure means "pot unknown".
+        if (r.status >= 400 && r.status < 500) return { ok:true, v:0 };
+        if (!r.ok) return { ok:false };
+        return r.json().then(function(j){
+          if (!j) return { ok:false };
+          if (!j.eligible || !j.claimableFees) return { ok:true, v:0 };
+          var f = j.claimableFees;
+          var v = ethLeg(f, f.token0Label, f.token1Label);
+          return isFinite(v) ? { ok:true, v:v } : { ok:false };
+        });
+      })
+      .catch(function(e){ console.warn('bankr claimable read failed:', e); return { ok:false }; });
+  }
+
+  function readTreasury(){
+    return fetch(CONFIG.baseRpc, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc:'2.0', id:1, method:'eth_getBalance',
+                             params:[CONFIG.treasury, 'latest'] })
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (!j || typeof j.result !== 'string') return { ok:false };
+        return { ok:true, v: parseInt(j.result, 16) / 1e18 };
+      })
+      .catch(function(e){ console.warn('treasury balance read failed:', e); return { ok:false }; });
+  }
+
+  function refreshPot(){
+    if (!CONFIG.launched || !isAddr(CONFIG.bmm) || !isAddr(CONFIG.treasury)) return;
+    Promise.all([readClaimable(), readTreasury()]).then(function(r){
+      var esc = r[0], held = r[1];
+      // a partial sum is a wrong number, so show nothing rather than half a pot
+      if (!esc.ok || !held.ok) {
+        console.warn('pot unknown — escrow ok:', esc.ok, 'treasury ok:', held.ok);
+        setPot(null);
+        return;
+      }
+      setPot(esc.v + held.v);
+    });
+  }
+
+  if (CONFIG.launched && isAddr(CONFIG.bmm)) {
+    refreshPot();
+    setInterval(refreshPot, Math.max(30000, CONFIG.pollMs || 45000));
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden) refreshPot();
+    });
+  }
 
   /* ---- dial: bezel ticks ---- */
   var ticks = document.getElementById('ticks');
@@ -604,7 +706,7 @@ var CONFIG = {
   }
 
   /* ---- dial: one dot per completed distribution ---- */
-  var EPOCHS = L.paid || 0, rings = [160, 144, 128];
+  var EPOCHS = paidN, rings = [160, 144, 128];
   var dots = document.getElementById('epochDots');
   for (i = 0; i < EPOCHS; i++){
     a = (i % 12 / 12) * Math.PI * 2 - Math.PI / 2;
