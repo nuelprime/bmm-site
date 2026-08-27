@@ -479,7 +479,7 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
 
 <footer class="sheet">
   <nav>
-    <a href="#">Buy on Base</a><a href="#">Chart</a><a href="#">X</a><a href="#">Snapshot scripts</a>
+    <a id="lnkBuy">Buy on Base</a><a id="lnkChart">Chart</a><a id="lnkX">X</a><a id="lnkRepo">Source</a>
   </nav>
   <small>BMM is not affiliated with Robinhood or with the HMM team.</small>
 </footer>
@@ -498,6 +498,12 @@ var CONFIG = {
   bmm:       '0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05',   // Base
   hmm:       '0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14',   // RH
   baseRpc:   'https://mainnet.base.org',
+  links: {
+    buy:   '',   // launchpad or Uniswap link for BMM
+    chart: '',   // dexscreener page
+    x:     'https://x.com/basedhmmcat',
+    repo:  ''    // https://github.com/nuelprime/...
+  },
   rhRpc:     '',                    // Robinhood Chain RPC
   // MOCK — delete this object once the reads below are wired
   mock: { pot:0.34, priceHmm:'0.04312', hmmUsd:'0.02226', bmmUsd:'0.000959',
@@ -515,6 +521,16 @@ var CONFIG = {
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // footer links from CONFIG. blank ones stay disabled.
+  var LINKMAP = { buy:'lnkBuy', chart:'lnkChart', x:'lnkX', repo:'lnkRepo' };
+  Object.keys(LINKMAP).forEach(function(k){
+    var el = document.getElementById(LINKMAP[k]);
+    if (!el) return;
+    var url = CONFIG.links && CONFIG.links[k];
+    if (url) { el.href = url; el.target = '_blank'; el.rel = 'noopener'; }
+    else { el.removeAttribute('href'); el.style.opacity = '.4'; }
+  });
   function mk(tag, attrs){
     var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
