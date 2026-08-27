@@ -267,7 +267,7 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
   <div class="mark"><b>BMM</b><span class="lbl">Based Thinking Cat</span></div>
   <div class="live">
     <span class="dot" aria-hidden="true"></span>
-    <span class="lbl lbl-ink">Running · 13 paid</span>
+    <span class="lbl lbl-ink" id="hdrStatus">Not launched</span>
   </div>
 </header>
 
@@ -277,12 +277,12 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     <p class="tagline">hold <em class="b">$BMM</em> on base,<br>earn <em class="h">$HMM</em> on robinhood</p>
     <div class="quote">
       <div class="lbl" style="margin-bottom:10px">Price in $HMM</div>
-      <div class="quote-main"><span>0.04312</span><span class="unit">HMM</span></div>
+      <div class="quote-main"><span id="pxMain">—</span><span class="unit">HMM</span></div>
       <div class="quote-meta">
-        <div>24H <b class="up">+18.4%</b></div>
-        <div>USD <b>$0.000959</b></div>
-        <div>MCAP <b>$1.04M</b></div>
-        <div>HMM/USD <b>$0.02226</b></div>
+        <div>24H <b id="pxChg">—</b></div>
+        <div>USD <b id="pxUsd">—</b></div>
+        <div>MCAP <b id="pxMcap">—</b></div>
+        <div>HMM/USD <b id="pxHmmUsd">—</b></div>
       </div>
     </div>
   </div>
@@ -303,9 +303,9 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
       <circle class="dial-plate" cx="200" cy="200" r="106"/>
       <circle class="hub" cx="200" cy="200" r="3.5"/>
       <text class="dial-lbl" x="200" y="168">POT</text>
-      <text class="dial-num" x="200" y="210">0.34</text>
-      <text class="dial-lbl" x="200" y="232">ETH OF 0.50 FULL</text>
-      <text class="dial-lbl dim" x="200" y="256">68% · 13 PAID</text>
+      <text class="dial-num" x="200" y="210" id="dlPot">0.00</text>
+      <text class="dial-lbl" x="200" y="232" id="dlOf">ETH OF 0.50 FULL</text>
+      <text class="dial-lbl dim" x="200" y="256" id="dlSub">0% · 0 PAID</text>
     </svg>
     <div class="dial-cap">
       <span class="lbl" style="display:inline-block;max-width:30ch">Snapshot at full pot. The pot is the treasury balance, so it empties itself on payout.</span>
@@ -330,10 +330,10 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     <text class="mtitle" x="30" y="90">BASE</text>
     <text class="mlbl"   x="30" y="112">BMM / WETH · V3 POOL</text>
     <line class="wire" x1="30" y1="126" x2="258" y2="126"/>
-    <text class="mlbl"  x="30" y="152">LP FEES COLLECTED</text>
-    <text class="mval"  x="30" y="176" fill="var(--base)">0.34 ETH</text>
-    <text class="mlbl"  x="30" y="202">TREASURY · WALLET · THIS IS THE POT</text>
-    <text class="mnote" x="30" y="222">0x7A2f…C41b</text>
+    <text class="mlbl"  x="30" y="152">CREATOR FEES ACCRUE IN ETH</text>
+    <text class="mlbl"  x="30" y="176">TREASURY · WALLET · THIS IS THE POT</text>
+    <text class="mnote" x="30" y="200">QUOTE TOKEN ONLY · NO BMM TO THE CREATOR</text>
+    <text class="mnote" x="30" y="222">0xD795…A73B</text>
 
     <path class="wire drawable" style="--len:80;--d:.5s" d="M280 146 H360"/>
     <circle class="flowdot" id="fd1" cx="280" cy="146" r="4.5"/>
@@ -361,14 +361,14 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     <text class="mtitle" x="792" y="90">ROBINHOOD CHAIN</text>
     <text class="mlbl"   x="792" y="112">DISTRIBUTOR · CONTRACT</text>
     <line class="wire" x1="792" y1="126" x2="970" y2="126"/>
-    <text class="mlbl"  x="792" y="152">HMM SENT LAST EPOCH</text>
-    <rect x="792" y="160" width="130" height="26" fill="var(--gold)"/>
-    <text class="mchip" x="800" y="179">70,120 HMM</text>
+    <text class="mlbl"  x="792" y="152">HMM PUSHED TO HOLDERS</text>
+    <rect x="792" y="160" width="72" height="26" fill="var(--gold)"/>
+    <text class="mchip" x="800" y="179">HMM</text>
     <text class="mlbl"  x="792" y="212">PUSHED · NO CLAIM NEEDED</text>
 
     <path class="wire dash drawable" style="--len:700;--d:1s" d="M881 234 V276 M320 276 H960"/>
     <g id="holdersH"></g>
-    <text class="mlbl" x="320" y="318">487 HOLDERS PAID PRO RATA · DUST FLOOR 0.001 BMM</text>
+    <text class="mlbl" x="320" y="318">HOLDERS PAID PRO RATA · DUST FLOOR 0.001 BMM</text>
 
     <g transform="translate(8,282)">
       <rect x="0" y="0" width="11" height="11" fill="var(--base-line)"/>
@@ -385,8 +385,8 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     <text class="mtitle" x="30" y="38">BASE</text>
     <text class="mlbl"   x="30" y="58">BMM / WETH · V3 POOL</text>
     <line class="wire" x1="30" y1="72" x2="330" y2="72"/>
-    <text class="mlbl"  x="30" y="96">LP FEES COLLECTED</text>
-    <text class="mval"  x="30" y="120" fill="var(--base)">0.34 ETH</text>
+    <text class="mlbl"  x="30" y="96">CREATOR FEES ACCRUE IN ETH</text>
+    <text class="mnote" x="30" y="118">QUOTE TOKEN ONLY · NO BMM TO THE CREATOR</text>
     <text class="mnote" x="30" y="138">TREASURY WALLET · THIS IS THE POT</text>
 
     <path class="wire drawable" style="--len:50;--d:.4s" d="M180 148 V196"/>
@@ -411,13 +411,13 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     <text class="mtitle" x="30" y="492">ROBINHOOD CHAIN</text>
     <text class="mlbl"   x="30" y="512">DISTRIBUTOR · CONTRACT</text>
     <line class="wire" x1="30" y1="526" x2="330" y2="526"/>
-    <text class="mlbl"  x="30" y="550">HMM SENT LAST EPOCH</text>
-    <rect x="30" y="558" width="130" height="26" fill="var(--gold)"/>
-    <text class="mchip" x="38" y="577">70,120 HMM</text>
+    <text class="mlbl"  x="30" y="550">HMM PUSHED TO HOLDERS</text>
+    <rect x="30" y="558" width="72" height="26" fill="var(--gold)"/>
+    <text class="mchip" x="38" y="577">HMM</text>
 
     <path class="wire dash drawable" style="--len:120;--d:1s" d="M180 594 V632"/>
     <g id="holdersV"></g>
-    <text class="mlbl" x="30" y="676">487 HOLDERS · PUSHED · NO CLAIM NEEDED</text>
+    <text class="mlbl" x="30" y="676">HOLDERS PAID PRO RATA · NO CLAIM NEEDED</text>
   </svg>
 </section>
 
@@ -425,10 +425,10 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
 <section class="sheet sheet-pad">
   <div class="sec-head"><span class="idx">02</span><h2>Paid out so far</h2><hr class="rule"></div>
   <div class="strip">
-    <div class="cell"><div class="v">13</div><div class="n">Distributions completed</div></div>
-    <div class="cell"><div class="v">902,140</div><div class="n">HMM sent to holders</div></div>
-    <div class="cell"><div class="v">487</div><div class="n">Holders at last snapshot</div></div>
-    <div class="cell"><div class="v">6.81<span style="font-size:.5em"> ETH</span></div><div class="n">Fees routed through</div></div>
+    <div class="cell"><div class="v" id="stPaid">0</div><div class="n">Distributions completed</div></div>
+    <div class="cell"><div class="v" id="stHmm">0</div><div class="n">HMM sent to holders</div></div>
+    <div class="cell"><div class="v" id="stHolders">0</div><div class="n">Holders at last snapshot</div></div>
+    <div class="cell"><div class="v"><span id="stEth">0</span><span style="font-size:.5em"> ETH</span></div><div class="n">Fees routed through</div></div>
   </div>
 </section>
 
@@ -460,18 +460,18 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     </div>
     <div class="vbox">
       <h3>Distributor · Robinhood Chain · HMM out</h3>
-      <a class="addr" href="#">0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A</a>
+      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
       <p>Every HMM that reaches a holder leaves this address. What sits here plus
       what has been paid equals everything ever bought.</p>
     </div>
     <div class="vbox">
       <h3>BMM token · Base</h3>
-      <a class="addr" href="#">0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05</a>
+      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
       <p>Fixed supply. No mint function after deploy. No transfer tax.</p>
     </div>
     <div class="vbox">
       <h3>HMM token · Robinhood Chain</h3>
-      <a class="addr" href="#">0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14</a>
+      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
       <p>Not our token. BMM holds no authority over HMM and never touches its supply.</p>
     </div>
   </div>
@@ -505,10 +505,11 @@ var CONFIG = {
     repo:  ''    // https://github.com/nuelprime/...
   },
   rhRpc:     '',                    // Robinhood Chain RPC
-  // MOCK — delete this object once the reads below are wired
-  mock: { pot:0.34, priceHmm:'0.04312', hmmUsd:'0.02226', bmmUsd:'0.000959',
-          mcap:'$1.04M', chg24:'+18.4%', paid:13, hmmTotal:'902,140',
-          holders:487, ethTotal:'6.81' }
+  launched: false,   // flip to true on launch day
+  // null renders as an em dash. counters are 0 because 0 is true.
+  live: { pot:0, priceHmm:null, hmmUsd:null, bmmUsd:null, mcap:null,
+          chg24:null, paid:0, hmmTotal:0, holders:0, ethTotal:0 },
+  epochs: []   // push {epoch,block,eth,hmm,holders,tx} per distribution
 };
 
 /* TO GO LIVE, replace CONFIG.mock with three reads:
@@ -538,7 +539,29 @@ var CONFIG = {
   }
 
   /* ---- dial: pot arc ---- */
-  var POT = CONFIG.mock.pot, THRESHOLD = CONFIG.threshold;
+  var L = CONFIG.live || {};
+  function dash(v){ return (v === null || v === undefined || v === '') ? '—' : v; }
+  function put(id, v){ var e = document.getElementById(id); if (e) e.textContent = dash(v); }
+
+  var qBlock = document.querySelector('.quote');
+  if (qBlock && !CONFIG.launched) qBlock.style.display = 'none';
+
+  put('pxMain', L.priceHmm);
+  put('pxUsd',  L.bmmUsd ? '$' + L.bmmUsd : null);
+  put('pxMcap', L.mcap);
+  put('pxHmmUsd', L.hmmUsd ? '$' + L.hmmUsd : null);
+  var chg = document.getElementById('pxChg');
+  if (chg) { chg.textContent = dash(L.chg24);
+    if (L.chg24) chg.className = (String(L.chg24).charAt(0) === '-') ? 'dn' : 'up'; }
+
+  put('stPaid', L.paid); put('stHolders', L.holders);
+  put('stHmm', L.hmmTotal); put('stEth', L.ethTotal);
+  put('hdrStatus', CONFIG.launched ? ('Running · ' + (L.paid || 0) + ' paid') : 'Not launched');
+
+  var POT = L.pot || 0, THRESHOLD = CONFIG.threshold;
+  put('dlPot', POT.toFixed(2));
+  put('dlOf',  'ETH OF ' + THRESHOLD.toFixed(2) + ' FULL');
+  put('dlSub', Math.round(Math.min(POT / THRESHOLD, 1) * 100) + '% · ' + (L.paid || 0) + ' PAID');
   var bImg = document.getElementById('bannerImg');
   var bBox = bImg.parentNode;
   if (CONFIG.banner) {
@@ -551,9 +574,14 @@ var CONFIG = {
   var pct = Math.min(POT / THRESHOLD, 1);
   var R = 176, C = 2 * Math.PI * R;
   var arc = document.getElementById('potArc');
-  arc.setAttribute('stroke-dasharray', (C * pct).toFixed(1) + ' ' + C.toFixed(1));
-  arc.style.setProperty('--len', (C * pct).toFixed(1));
-  if (reduce){ arc.style.strokeDashoffset = 0; arc.style.animation = 'none'; }
+  if (pct <= 0) {
+    arc.style.display = 'none';   // an empty pot must draw nothing
+  } else {
+    // inline beats .drawable, which would read --len:0 as "solid ring"
+    arc.style.strokeDasharray = (C * pct).toFixed(1) + ' ' + C.toFixed(1);
+    arc.style.setProperty('--len', (C * pct).toFixed(1));
+    if (reduce){ arc.style.strokeDashoffset = 0; arc.style.animation = 'none'; }
+  }
 
   /* ---- dial: pointer tracks the arc edge ---- */
   var needle = document.getElementById('needle');
@@ -576,7 +604,7 @@ var CONFIG = {
   }
 
   /* ---- dial: one dot per completed distribution ---- */
-  var EPOCHS = 13, rings = [160, 144, 128];
+  var EPOCHS = L.paid || 0, rings = [160, 144, 128];
   var dots = document.getElementById('epochDots');
   for (i = 0; i < EPOCHS; i++){
     a = (i % 12 / 12) * Math.PI * 2 - Math.PI / 2;
@@ -632,15 +660,17 @@ var CONFIG = {
 
   /* ---- ledger ---- */
   var COLS = ['Epoch','Snapshot block','ETH in','HMM bought','Holders','Receipt'];
-  var ROWS = [
-    [14, '—',          '0.34', null,     '—',   null],
-    [13, '24,918,204', '0.52', '70,120', '487', '0x9a3f…7c21'],
-    [12, '24,842,117', '0.50', '67,880', '471', '0x2b81…44de'],
-    [11, '24,769,502', '0.54', '72,405', '463', '0xf10c…9a07'],
-    [10, '24,691,338', '0.50', '66,720', '448', '0x77ad…1b52'],
-    [9,  '24,610,884', '0.53', '69,190', '432', '0xc4e2…08f9']
-  ];
+  var ROWS = (CONFIG.epochs || []).map(function(e){
+    return [e.epoch, e.block, e.eth, e.hmm, e.holders, e.tx];
+  });
   var body = document.getElementById('ledgerBody');
+  if (!ROWS.length) {
+    var tr0 = document.createElement('tr');
+    tr0.innerHTML = '<td colspan="6" style="padding:26px 0;color:var(--ink-60);'
+      + 'font-size:11px;letter-spacing:.14em;text-transform:uppercase">'
+      + 'No distributions yet. The first one lands when the pot fills.</td>';
+    body.appendChild(tr0);
+  }
   ROWS.forEach(function(rw){
     var open = (rw[5] === null);
     var cells = [
