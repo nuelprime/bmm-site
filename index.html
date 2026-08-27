@@ -289,7 +289,7 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
 
   <div class="dial-wrap">
     <svg class="dial" viewBox="0 0 400 400" role="img"
-         aria-label="Pot gauge. The pot holds 0.34 ETH of the 0.50 ETH full mark, 68 percent. 13 distributions paid so far.">
+         aria-label="Pot gauge showing how full the distribution pot is.">
       <circle class="dial-shell" cx="200" cy="200" r="196"/>
       <circle class="ring-track" cx="200" cy="200" r="176"/>
       <circle class="ring-track" cx="200" cy="200" r="160"/>
@@ -304,8 +304,8 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
       <circle class="hub" cx="200" cy="200" r="3.5"/>
       <text class="dial-lbl" x="200" y="168">POT</text>
       <text class="dial-num" x="200" y="210" id="dlPot">0.00</text>
-      <text class="dial-lbl" x="200" y="232" id="dlOf">ETH OF 0.50 FULL</text>
-      <text class="dial-lbl dim" x="200" y="256" id="dlSub">0% · 0 PAID</text>
+      <text class="dial-lbl" x="200" y="232" id="dlOf">ETH IN POT</text>
+      <text class="dial-lbl dim" x="200" y="256" id="dlSub">0 PAID</text>
     </svg>
     <div class="dial-cap">
       <span class="lbl" style="display:inline-block;max-width:30ch">Snapshot at full pot. The pot is the treasury balance, so it empties itself on payout.</span>
@@ -492,7 +492,7 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
    ============================================================ */
 var CONFIG = {
   banner:    'img/banner.jpg',      // just drop the file in /img with this name
-  threshold: 0.50,                  // full pot, in ETH. rule: 0.001 x holder count, floor 0.3
+  threshold: 0.01,   // full pot, in ETH. not shown on the page. raise as holders grow.
   treasury:  '0xD795eB3C59718f615E13a9d1BF7C8bf4F1F5A73B',   // Base wallet, holds the pot
   distributor:'0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A',  // RH contract, pushes HMM
   bmm:       '0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05',   // Base
@@ -600,10 +600,10 @@ var CONFIG = {
     var pct = Math.min(pot / THRESHOLD, 1);
 
     put('dlPot', known ? fmtEth(pot) : '—');
-    put('dlOf',  'ETH OF ' + THRESHOLD.toFixed(2) + ' FULL');
+    put('dlOf',  'ETH IN POT');
     put('dlSub', !known ? ('READ FAILED · ' + paidN + ' PAID')
       : pct >= 1 ? ('FULL · READY · ' + paidN + ' PAID')
-      : (Math.round(pct * 100) + '% · ' + paidN + ' PAID'));
+      : (paidN + ' PAID'));
 
     if (pct <= 0) {
       arc.style.display = 'none';   // an empty pot must draw nothing
