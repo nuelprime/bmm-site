@@ -148,7 +148,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;
 .banner img{display:none;width:100%;height:auto}
 .banner.has-img img{display:block}
 .banner.has-img .banner-hint{display:none}
-.banner-hint{text-align:center;padding:16px;max-width:36ch}
+.banner-hint{display:none;text-align:center;padding:16px;max-width:36ch}
+.banner.no-img .banner-hint{display:block}
 .banner-over{position:absolute;inset:0;display:flex;align-items:flex-end;
   padding:clamp(9px,2vw,24px);pointer-events:none}
 .banner-over span{font-size:clamp(17px,4.6vw,68px);font-weight:700;line-height:.8;
@@ -523,10 +524,13 @@ var CONFIG = {
   /* ---- dial: pot arc ---- */
   var POT = CONFIG.mock.pot, THRESHOLD = CONFIG.threshold;
   var bImg = document.getElementById('bannerImg');
+  var bBox = bImg.parentNode;
   if (CONFIG.banner) {
-    bImg.onload  = function(){ bImg.parentNode.classList.add('has-img'); };
-    bImg.onerror = function(){ bImg.removeAttribute('src'); };  // fall back to the frame
+    bImg.onload  = function(){ bBox.classList.add('has-img'); };
+    bImg.onerror = function(){ bImg.removeAttribute('src'); bBox.classList.add('no-img'); };
     bImg.src = CONFIG.banner;
+  } else {
+    bBox.classList.add('no-img');
   }
   var pct = Math.min(POT / THRESHOLD, 1);
   var R = 176, C = 2 * Math.PI * R;
