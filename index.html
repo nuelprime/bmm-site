@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<!--
+  BMM / BASED THINKING CAT
+  Design direction: instrument schematic. Outlined panels, drawn connector lines,
+  all-mono type at extreme scale contrast, paper-gray ground, black ink.
+  UX paradigm: single-scroll narrative page with one signature dial. Not a dashboard.
+  Color encodes chain: Base blue = ETH in. HMM gold = HMM out.
+  References: Heartbeat Drum Machine CHD-4 (panels, connectors, labels, single accent),
+              Driftime Impact Report 2022 (oversized type over imagery).
+  Numbers below are placeholders. Wire to real RPC reads before shipping.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BMM · Based Thinking Cat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E4E4E1;
+  --paper-2:#DBDBD7;
+  --ink:#131311;
+  --ink-60:#131311AD;
+  --ink-45:#13131173;
+  --ink-35:#13131159;
+  --rule:#13131126;
+  --base:#0038D6;
+  --base-line:#0052FF;
+  --gold:#F2B21B;
+  --gold-ink:#7A5500;
+  --stroke:1.5px;
+  --pad:clamp(18px,4vw,44px);
+  --gap:clamp(12px,1.6vw,20px);
+  --r:22px;
+  --r-sm:14px;
+  --maxw:1360px;
+  /* Drop img/bg.jpg in and it takes over. If the file isn't there that
+     layer just doesn't paint and the gradient below shows instead.        */
+  --photo:
+    url('img/bg.jpg') center/cover no-repeat,
+    radial-gradient(ellipse 38% 34% at 74% 26%, #FFEFBE 0%, #F4BB55 26%, #CE843370 48%, transparent 72%),
+    linear-gradient(to bottom,
+      #2F4459 0%, #4E6879 17%, #93927A 34%, #CFA663 44%, #85924D 52%,
+      #4F6934 63%, #344A20 81%, #1C2812 100%);
+  --photo-ink:#EDEBE6;
+  --photo-ink-70:#EDEBE6B8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:#1B2712;color:var(--ink);
+  font-family:'Space Mono',ui-monospace,monospace;
+  font-size:15px;line-height:1.5;overflow-x:hidden;
+}
+/* photo sits behind everything, fixed so sheets slide over it */
+body::before{content:'';position:fixed;inset:0;z-index:-2;background:var(--photo)}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,#0A0F0673 0%,#0A0F0626 44%,#0A0F06C7 100%)}
+
+/* opaque paper sheet. every block of content below the hero is one of these. */
+.sheet{background:var(--paper);border:var(--stroke) solid var(--ink);
+  border-radius:var(--r);max-width:var(--maxw);margin:0 auto var(--gap);position:relative}
+.sheet:last-of-type{margin-bottom:var(--gap)}
+.sheet-pad{padding:clamp(22px,3.4vw,40px) clamp(18px,3vw,36px)}
+.shell{padding:0 var(--pad)}
+svg{display:block}
+a{color:inherit}
+
+.lbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-60);line-height:1.45}
+.lbl-ink{color:var(--ink)}
+.rule{height:1px;background:var(--rule);border:0}
+.chip{display:inline-block;background:var(--gold);color:var(--ink);
+  padding:2px 7px 3px;font-weight:700;font-variant-numeric:tabular-nums}
+.blu{color:var(--base)}
+.up{color:#0A7A34}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px clamp(16px,3vw,26px);border:var(--stroke) solid var(--ink);
+  position:sticky;top:var(--gap);z-index:20;background:var(--paper);flex-wrap:wrap;
+  border-radius:var(--r);max-width:var(--maxw);margin:var(--gap) auto}
+.mark{display:flex;align-items:baseline;gap:10px}
+.mark b{font-size:17px;letter-spacing:.02em}
+.live{display:flex;align-items:center;gap:7px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--base-line);flex:none}
+@media(prefers-reduced-motion:no-preference){.dot{animation:pulse 2.4s ease-in-out infinite}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ---------- hero ---------- */
+.hero::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  border-radius:var(--r);
+  background:linear-gradient(104deg,#0A0F06E6 0%,#0A0F06AD 36%,#0A0F0647 58%,transparent 76%)}
+@media(max-width:900px){
+  .hero::before{background:linear-gradient(to bottom,transparent 0%,#0A0F0666 34%,#0A0F06E0 62%,#0A0F06F2 100%)}
+}
+.hero{position:relative;padding:clamp(30px,6vw,68px) var(--pad) clamp(26px,4vw,48px);
+  max-width:var(--maxw);margin-inline:auto;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,460px);
+  gap:clamp(24px,4vw,48px);align-items:center}
+.wordmark{font-size:clamp(58px,14vw,158px);font-weight:700;line-height:.84;
+  letter-spacing:-.018em;color:var(--photo-ink);
+  text-shadow:0 2px 28px #0A0F06B3,0 1px 3px #0A0F0680}
+.hero>div>.lbl,.hero .tagline,.hero .quote-main,.hero .quote-meta{
+  text-shadow:0 1px 16px #0A0F06CC}
+.tagline{margin-top:18px;max-width:26ch;color:var(--photo-ink);
+  font-size:clamp(17px,2.5vw,27px);font-weight:700;line-height:1.28;letter-spacing:-.015em}
+.tagline em{font-style:normal;padding:0 6px 2px}
+.tagline .b{background:var(--base);color:var(--photo-ink)}
+.tagline .h{background:var(--gold);color:var(--ink)}
+.quote{margin-top:clamp(26px,3.6vw,40px)}
+.quote .lbl{color:var(--photo-ink-70)}
+.quote-main{font-size:clamp(30px,6vw,52px);font-weight:700;line-height:1.02;
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-variant-numeric:tabular-nums;
+  letter-spacing:-.03em;color:var(--photo-ink)}
+.quote-main .unit{font-size:.34em;font-weight:400;color:var(--photo-ink-70);letter-spacing:.1em}
+.quote-meta{display:flex;gap:22px;margin-top:14px;flex-wrap:wrap}
+.quote-meta div{font-size:11px;color:var(--photo-ink-70);letter-spacing:.04em}
+.quote-meta b{color:var(--photo-ink);font-weight:700;font-variant-numeric:tabular-nums}
+.quote-meta .up{color:#7BE39B}
+
+/* ---------- signature dial ---------- */
+.dial{width:100%;height:auto;max-width:430px;margin-inline:auto}
+.dial-cap{text-align:center;margin-top:14px}
+.dial-cap .lbl{color:var(--photo-ink-70)}
+.ring-track{fill:none;stroke:var(--photo-ink);stroke-opacity:.28;stroke-width:1}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:13;stroke-linecap:butt;
+  transform:rotate(-90deg);transform-origin:200px 200px}
+.tick{stroke:var(--photo-ink);stroke-width:1;stroke-opacity:.6}
+.epoch-dot{fill:var(--photo-ink);fill-opacity:.85}
+.epoch-dot.cur{fill:var(--gold);stroke:var(--ink);stroke-width:1.5}
+.needle{stroke:var(--photo-ink);stroke-width:2.5;stroke-linecap:round;transform-origin:200px 200px}
+.hub{fill:var(--photo-ink)}
+.dial-shell{fill:none;stroke:var(--photo-ink);stroke-width:var(--stroke);stroke-opacity:.75}
+.dial-plate{fill:var(--paper);stroke:var(--ink);stroke-width:var(--stroke)}
+.dial-num{font:700 42px 'Space Mono',monospace;fill:var(--ink);text-anchor:middle;letter-spacing:-.03em}
+.dial-lbl{font:400 9.5px 'Space Mono',monospace;fill:var(--ink);fill-opacity:.74;
+  text-anchor:middle;letter-spacing:.17em}
+.dial-lbl.dim{fill-opacity:.68}
+
+/* ---------- banner slot ---------- */
+.banner{aspect-ratio:21/7;overflow:hidden;position:relative;overflow:hidden;
+  background:var(--paper) repeating-linear-gradient(45deg,#0000000D 0 11px,transparent 11px 22px);
+  display:grid;place-items:center}
+/* with a real image the frame takes the image's own shape, so nothing is cropped */
+.banner.has-img{aspect-ratio:auto;display:block;background:none}
+.banner img{display:none;width:100%;height:auto}
+.banner.has-img img{display:block}
+.banner.has-img .banner-hint{display:none}
+.banner-hint{text-align:center;padding:16px;max-width:36ch}
+.banner-over{position:absolute;inset:0;display:flex;align-items:flex-end;
+  padding:clamp(9px,2vw,24px);pointer-events:none}
+.banner-over span{font-size:clamp(17px,4.6vw,68px);font-weight:700;line-height:.8;
+  letter-spacing:-.04em;color:var(--gold);-webkit-text-stroke:2px var(--ink);
+  paint-order:stroke fill;display:block}
+
+/* ---------- sections ---------- */
+section{}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:clamp(22px,3.4vw,38px)}
+.sec-head h2{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+.sec-head .rule{flex:1}
+.sec-head .idx{font-size:10px;color:var(--ink-35);letter-spacing:.1em}
+
+/* ---------- machine schematic ---------- */
+.machine{width:100%;height:auto}
+.mpanel{fill:none;stroke-width:var(--stroke)}
+.mpanel.b{stroke:var(--base-line)}
+.mpanel.g{stroke:var(--gold-ink)}
+.mpanel.n{stroke:var(--ink)}
+.wire{fill:none;stroke:var(--ink);stroke-width:1.25;stroke-opacity:.55}
+.wire.dash{stroke-dasharray:5 5}
+.mtitle{font:700 12px 'Space Mono',monospace;fill:var(--ink);letter-spacing:.12em}
+.mlbl{font:400 9.5px 'Space Mono',monospace;fill:var(--ink);fill-opacity:.74;letter-spacing:.13em}
+.mval{font:700 17px 'Space Mono',monospace;letter-spacing:-.02em}
+.mchip{font:700 15px 'Space Mono',monospace;fill:var(--ink)}
+.mnote{font:400 9.5px 'Space Mono',monospace;fill:var(--ink);fill-opacity:.62;letter-spacing:.08em}
+.flowdot{fill:var(--base-line)}
+.flowdot.g{fill:var(--gold);stroke:var(--ink);stroke-width:.8}
+#machineV{display:none}
+@media(max-width:760px){
+  #machineH{display:none}
+  #machineV{display:block;max-width:400px;margin-inline:auto}
+}
+
+/* ---------- numbers strip ---------- */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--ink);
+  border:1px solid var(--ink);border-radius:var(--r-sm);overflow:hidden}
+.cell{background:var(--paper);padding:18px 16px}
+.cell .v{font-size:clamp(21px,3.2vw,31px);font-weight:700;font-variant-numeric:tabular-nums;
+  letter-spacing:-.03em;margin-bottom:6px}
+.cell .n{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-60);line-height:1.5}
+
+/* ---------- ledger ---------- */
+.ledger{width:100%;border-collapse:collapse;font-size:12.5px}
+.ledger th{text-align:left;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-60);font-weight:400;padding:0 12px 9px 0;white-space:nowrap;
+  border-bottom:1px solid var(--ink)}
+.ledger td{padding:13px 12px 13px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
+.ledger td:last-child,.ledger th:last-child{padding-right:0}
+.ledger .n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ledger tr td:first-child{color:var(--ink-60);font-size:11px}
+.tx{font-size:10.5px;color:var(--ink-60);text-decoration:none;border-bottom:1px solid var(--ink-35)}
+.tx:hover{color:var(--ink);border-color:var(--ink)}
+.muted{color:var(--ink-35)}
+
+/* ledger becomes stacked records on narrow screens, no sideways scroll */
+@media(max-width:700px){
+  .ledger thead{display:none}
+  .ledger,.ledger tbody,.ledger tr,.ledger td{display:block;width:100%}
+  .ledger tr{border-bottom:1px solid var(--ink);padding:12px 0}
+  .ledger td{border:0;padding:4px 0;display:flex;justify-content:space-between;
+    align-items:baseline;gap:16px}
+  .ledger td::before{content:attr(data-l);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-60);flex:none}
+  .ledger tr td:first-child{font-size:13px;color:var(--ink);font-weight:700;
+    padding-bottom:8px}
+  .ledger tr td:first-child::before{content:'EPOCH'}
+}
+
+/* ---------- verify / footer ---------- */
+.verify{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--ink);
+  border:1px solid var(--ink);border-radius:var(--r-sm);overflow:hidden}
+.vbox{background:var(--paper);padding:20px}
+.vbox h3{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:400;
+  color:var(--ink-60);margin-bottom:11px}
+.addr{font-size:11px;word-break:break-all;line-height:1.75;display:block;
+  text-decoration:none;border-bottom:1px solid var(--rule)}
+.addr:hover{border-color:var(--ink)}
+.vbox p{font-size:11px;color:var(--ink-60);line-height:1.75;margin-top:11px}
+footer{padding:20px clamp(18px,3vw,32px);display:flex;justify-content:space-between;
+  gap:18px;flex-wrap:wrap;align-items:baseline;margin-bottom:calc(var(--gap)*2)}
+footer nav{display:flex;gap:20px;flex-wrap:wrap}
+footer a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  border-bottom:1px solid var(--ink-35);padding:6px 0 3px}
+footer a:hover{border-color:var(--ink)}
+footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
+
+/* ---------- motion ---------- */
+@media(prefers-reduced-motion:no-preference){
+  .drawable{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
+    animation:draw 1.15s cubic-bezier(.22,1,.36,1) forwards;animation-delay:var(--d,0s)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .fadein{opacity:0;animation:fi .5s ease forwards;animation-delay:var(--d,0s)}
+  @keyframes fi{to{opacity:1}}
+}
+:focus-visible{outline:2.5px solid var(--base-line);outline-offset:3px}
+
+@media(max-width:640px){
+  :root{--gap:8px}
+  .sheet{border-left:0;border-right:0;border-radius:0}
+  header{border-left:0;border-right:0;border-radius:0}
+}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:30px}
+  .dial{order:-1;max-width:330px}
+  .dial-wrap{order:-1}
+  .strip{grid-template-columns:1fr 1fr}
+  .verify{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark"><b>BMM</b><span class="lbl">Based Thinking Cat</span></div>
+  <div class="live">
+    <span class="dot" aria-hidden="true"></span>
+    <span class="lbl lbl-ink">Running · 13 paid</span>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <h1 class="wordmark">BMM</h1>
+    <p class="tagline">hold <em class="b">$BMM</em> on base,<br>earn <em class="h">$HMM</em> on robinhood</p>
+    <div class="quote">
+      <div class="lbl" style="margin-bottom:10px">Price in $HMM</div>
+      <div class="quote-main"><span>0.04312</span><span class="unit">HMM</span></div>
+      <div class="quote-meta">
+        <div>24H <b class="up">+18.4%</b></div>
+        <div>USD <b>$0.000959</b></div>
+        <div>MCAP <b>$1.04M</b></div>
+        <div>HMM/USD <b>$0.02226</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dial-wrap">
+    <svg class="dial" viewBox="0 0 400 400" role="img"
+         aria-label="Pot gauge. The pot holds 0.34 ETH of the 0.50 ETH full mark, 68 percent. 13 distributions paid so far.">
+      <circle class="dial-shell" cx="200" cy="200" r="196"/>
+      <circle class="ring-track" cx="200" cy="200" r="176"/>
+      <circle class="ring-track" cx="200" cy="200" r="160"/>
+      <circle class="ring-track" cx="200" cy="200" r="144"/>
+      <circle class="ring-track" cx="200" cy="200" r="128"/>
+      <circle class="ring-fill drawable" id="potArc" cx="200" cy="200" r="176" style="--d:.25s"/>
+      <g id="ticks"></g>
+      <g id="epochDots"></g>
+      <!-- pointer sits outside the readout plate so it never crosses the numbers -->
+      <line class="needle" id="needle" x1="200" y1="112" x2="200" y2="30"/>
+      <circle class="dial-plate" cx="200" cy="200" r="106"/>
+      <circle class="hub" cx="200" cy="200" r="3.5"/>
+      <text class="dial-lbl" x="200" y="168">POT</text>
+      <text class="dial-num" x="200" y="210">0.34</text>
+      <text class="dial-lbl" x="200" y="232">ETH OF 0.50 FULL</text>
+      <text class="dial-lbl dim" x="200" y="256">68% · 13 PAID</text>
+    </svg>
+    <div class="dial-cap">
+      <span class="lbl" style="display:inline-block;max-width:30ch">Snapshot at full pot. The pot is the treasury balance, so it empties itself on payout.</span>
+    </div>
+  </div>
+</div>
+
+<div class="banner sheet">
+  <img id="bannerImg" alt="">
+  <div class="banner-hint lbl">Set <b>#bannerImg</b> src to your banner · 21:7</div>
+  <div class="banner-over"><div><span>BASED</span><span>THINKING</span><span>CAT</span></div></div>
+</div>
+
+<!-- ============ 01 MACHINE ============ -->
+<section class="sheet sheet-pad">
+  <div class="sec-head"><span class="idx">01</span><h2>The machine</h2><hr class="rule"></div>
+
+  <!-- wide -->
+  <svg class="machine" id="machineH" viewBox="0 0 1000 330" role="img"
+       aria-label="Schematic. Base trading fees collect ETH in a treasury. The ETH is bridged to Robinhood Chain and swapped for HMM. The HMM is pushed out to BMM holders.">
+    <rect class="mpanel b drawable" style="--len:900;--d:.1s" x="8" y="58" width="272" height="176" rx="22"/>
+    <text class="mtitle" x="30" y="90">BASE</text>
+    <text class="mlbl"   x="30" y="112">BMM / WETH · V3 POOL</text>
+    <line class="wire" x1="30" y1="126" x2="258" y2="126"/>
+    <text class="mlbl"  x="30" y="152">LP FEES COLLECTED</text>
+    <text class="mval"  x="30" y="176" fill="var(--base)">0.34 ETH</text>
+    <text class="mlbl"  x="30" y="202">TREASURY · WALLET · THIS IS THE POT</text>
+    <text class="mnote" x="30" y="222">0x7A2f…C41b</text>
+
+    <path class="wire drawable" style="--len:80;--d:.5s" d="M280 146 H360"/>
+    <circle class="flowdot" id="fd1" cx="280" cy="146" r="4.5"/>
+
+    <rect class="mpanel n drawable" style="--len:560;--d:.35s" x="360" y="88" width="120" height="116" rx="18"/>
+    <text class="mtitle" x="380" y="118" font-size="10.5">BRIDGE</text>
+    <text class="mlbl"  x="380" y="140">ETH → ETH</text>
+    <text class="mlbl"  x="380" y="158">MANUAL</text>
+    <text class="mnote" x="380" y="182">SAME ASSET</text>
+    <text class="mnote" x="380" y="196">BOTH CHAINS</text>
+
+    <path class="wire drawable" style="--len:80;--d:.7s" d="M480 146 H560"/>
+
+    <rect class="mpanel g drawable" style="--len:560;--d:.55s" x="560" y="88" width="130" height="116" rx="18"/>
+    <text class="mtitle" x="580" y="118" font-size="10.5">SWAP</text>
+    <text class="mlbl"  x="580" y="140">WETH → HMM</text>
+    <text class="mlbl"  x="580" y="158">UNISWAP V3</text>
+    <text class="mnote" x="580" y="182">CHECK TICK DEPTH</text>
+    <text class="mnote" x="580" y="196">SPLIT IF LARGE</text>
+
+    <path class="wire drawable" style="--len:80;--d:.85s" d="M690 146 H770"/>
+    <circle class="flowdot g" id="fd2" cx="770" cy="146" r="4.5"/>
+
+    <rect class="mpanel g drawable" style="--len:900;--d:.7s" x="770" y="58" width="222" height="176" rx="22"/>
+    <text class="mtitle" x="792" y="90">ROBINHOOD CHAIN</text>
+    <text class="mlbl"   x="792" y="112">DISTRIBUTOR · CONTRACT</text>
+    <line class="wire" x1="792" y1="126" x2="970" y2="126"/>
+    <text class="mlbl"  x="792" y="152">HMM SENT LAST EPOCH</text>
+    <rect x="792" y="160" width="130" height="26" fill="var(--gold)"/>
+    <text class="mchip" x="800" y="179">70,120 HMM</text>
+    <text class="mlbl"  x="792" y="212">PUSHED · NO CLAIM NEEDED</text>
+
+    <path class="wire dash drawable" style="--len:700;--d:1s" d="M881 234 V276 M320 276 H960"/>
+    <g id="holdersH"></g>
+    <text class="mlbl" x="320" y="318">487 HOLDERS PAID PRO RATA · DUST FLOOR 0.001 BMM</text>
+
+    <g transform="translate(8,282)">
+      <rect x="0" y="0" width="11" height="11" fill="var(--base-line)"/>
+      <text class="mnote" x="18" y="9">ETH IN</text>
+      <rect x="0" y="18" width="11" height="11" fill="var(--gold)" stroke="var(--ink)" stroke-width=".8"/>
+      <text class="mnote" x="18" y="27">HMM OUT</text>
+    </g>
+  </svg>
+
+  <!-- narrow: same machine, stacked vertically. no sideways scroll. -->
+  <svg class="machine" id="machineV" viewBox="0 0 360 700" role="img"
+       aria-label="Schematic. Base trading fees collect ETH in a treasury. The ETH is bridged to Robinhood Chain and swapped for HMM. The HMM is pushed out to BMM holders.">
+    <rect class="mpanel b drawable" style="--len:800;--d:.1s" x="10" y="8" width="340" height="140" rx="20"/>
+    <text class="mtitle" x="30" y="38">BASE</text>
+    <text class="mlbl"   x="30" y="58">BMM / WETH · V3 POOL</text>
+    <line class="wire" x1="30" y1="72" x2="330" y2="72"/>
+    <text class="mlbl"  x="30" y="96">LP FEES COLLECTED</text>
+    <text class="mval"  x="30" y="120" fill="var(--base)">0.34 ETH</text>
+    <text class="mnote" x="30" y="138">TREASURY WALLET · THIS IS THE POT</text>
+
+    <path class="wire drawable" style="--len:50;--d:.4s" d="M180 148 V196"/>
+    <circle class="flowdot" id="fv1" cx="180" cy="152" r="4.5"/>
+
+    <rect class="mpanel n drawable" style="--len:700;--d:.3s" x="10" y="196" width="340" height="86" rx="18"/>
+    <text class="mtitle" x="30" y="222" font-size="10.5">BRIDGE · MANUAL</text>
+    <text class="mlbl"  x="30" y="244">ETH → ETH · SAME ASSET BOTH CHAINS</text>
+    <text class="mnote" x="30" y="266">NO WRAPPER · NO CUSTODY</text>
+
+    <path class="wire drawable" style="--len:50;--d:.6s" d="M180 282 V330"/>
+
+    <rect class="mpanel g drawable" style="--len:700;--d:.5s" x="10" y="330" width="340" height="86" rx="18"/>
+    <text class="mtitle" x="30" y="356" font-size="10.5">SWAP · UNISWAP V3</text>
+    <text class="mlbl"  x="30" y="378">WETH → HMM ON ROBINHOOD CHAIN</text>
+    <text class="mnote" x="30" y="400">CHECK TICK DEPTH · SPLIT IF LARGE</text>
+
+    <path class="wire drawable" style="--len:50;--d:.8s" d="M180 416 V464"/>
+    <circle class="flowdot g" id="fv2" cx="180" cy="420" r="4.5"/>
+
+    <rect class="mpanel g drawable" style="--len:800;--d:.7s" x="10" y="464" width="340" height="130" rx="20"/>
+    <text class="mtitle" x="30" y="492">ROBINHOOD CHAIN</text>
+    <text class="mlbl"   x="30" y="512">DISTRIBUTOR · CONTRACT</text>
+    <line class="wire" x1="30" y1="526" x2="330" y2="526"/>
+    <text class="mlbl"  x="30" y="550">HMM SENT LAST EPOCH</text>
+    <rect x="30" y="558" width="130" height="26" fill="var(--gold)"/>
+    <text class="mchip" x="38" y="577">70,120 HMM</text>
+
+    <path class="wire dash drawable" style="--len:120;--d:1s" d="M180 594 V632"/>
+    <g id="holdersV"></g>
+    <text class="mlbl" x="30" y="676">487 HOLDERS · PUSHED · NO CLAIM NEEDED</text>
+  </svg>
+</section>
+
+<!-- ============ 02 NUMBERS ============ -->
+<section class="sheet sheet-pad">
+  <div class="sec-head"><span class="idx">02</span><h2>Paid out so far</h2><hr class="rule"></div>
+  <div class="strip">
+    <div class="cell"><div class="v">13</div><div class="n">Distributions completed</div></div>
+    <div class="cell"><div class="v">902,140</div><div class="n">HMM sent to holders</div></div>
+    <div class="cell"><div class="v">487</div><div class="n">Holders at last snapshot</div></div>
+    <div class="cell"><div class="v">6.81<span style="font-size:.5em"> ETH</span></div><div class="n">Fees routed through</div></div>
+  </div>
+</section>
+
+<!-- ============ 03 LEDGER ============ -->
+<section class="sheet sheet-pad">
+  <div class="sec-head"><span class="idx">03</span><h2>Ledger</h2><hr class="rule"></div>
+  <table class="ledger">
+    <thead>
+      <tr><th>Epoch</th><th>Snapshot block</th><th>ETH in</th>
+          <th>HMM bought</th><th>Holders</th><th>Receipt</th></tr>
+    </thead>
+    <tbody id="ledgerBody"></tbody>
+  </table>
+  <p class="lbl" style="margin-top:20px;max-width:58ch;line-height:1.8">
+    Snapshot at full pot, at a random block so it cannot be timed. Excluded from every
+    snapshot: the liquidity pool, the launchpad contracts, and the treasury.
+  </p>
+</section>
+
+<!-- ============ 04 VERIFY ============ -->
+<section class="sheet sheet-pad">
+  <div class="sec-head"><span class="idx">04</span><h2>Check it yourself</h2><hr class="rule"></div>
+  <div class="verify">
+    <div class="vbox">
+      <h3>Treasury · Base · ETH in</h3>
+      <a class="addr" href="#">0x7A2f9c4E81bB5d0a37F6cC91eA4d2B8fE0C41b3D</a>
+      <p>Every ETH that funds a distribution leaves this address. Watch it, and the
+      totals above should always agree.</p>
+    </div>
+    <div class="vbox">
+      <h3>Distributor · Robinhood Chain · HMM out</h3>
+      <a class="addr" href="#">0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A</a>
+      <p>Every HMM that reaches a holder leaves this address. What sits here plus
+      what has been paid equals everything ever bought.</p>
+    </div>
+    <div class="vbox">
+      <h3>BMM token · Base</h3>
+      <a class="addr" href="#">0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05</a>
+      <p>Fixed supply. No mint function after deploy. No transfer tax.</p>
+    </div>
+    <div class="vbox">
+      <h3>HMM token · Robinhood Chain</h3>
+      <a class="addr" href="#">0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14</a>
+      <p>Not our token. BMM holds no authority over HMM and never touches its supply.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="sheet">
+  <nav>
+    <a href="#">Buy on Base</a><a href="#">Chart</a><a href="#">X</a><a href="#">Snapshot scripts</a>
+  </nav>
+  <small>BMM is not affiliated with Robinhood or with the HMM team.</small>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIG — everything you change lives here.
+   Nothing else stores state. The pot is the treasury's live ETH
+   balance, so it empties itself the moment you spend it.
+   ============================================================ */
+var CONFIG = {
+  banner:    'img/banner.jpg',      // just drop the file in /img with this name
+  threshold: 0.50,                  // full pot, in ETH. rule: 0.001 x holder count, floor 0.3
+  treasury:  '0x7A2f9c4E81bB5d0a37F6cC91eA4d2B8fE0C41b3D',   // Base wallet, holds the pot
+  distributor:'0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A',  // RH contract, pushes HMM
+  bmm:       '0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05',   // Base
+  hmm:       '0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14',   // RH
+  baseRpc:   'https://mainnet.base.org',
+  rhRpc:     '',                    // Robinhood Chain RPC
+  // MOCK — delete this object once the reads below are wired
+  mock: { pot:0.34, priceHmm:'0.04312', hmmUsd:'0.02226', bmmUsd:'0.000959',
+          mcap:'$1.04M', chg24:'+18.4%', paid:13, hmmTotal:'902,140',
+          holders:487, ethTotal:'6.81' }
+};
+
+/* TO GO LIVE, replace CONFIG.mock with three reads:
+   pot      = eth_getBalance(CONFIG.treasury)                    on baseRpc
+   paid     = count of Distributed events on CONFIG.distributor   on rhRpc
+   priceHmm = (BMM/WETH from its V3 pool) / (HMM/WETH from its V3 pool)
+   Everything on this page derives from those. No backend, no database.  */
+
+(function(){
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function mk(tag, attrs){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  /* ---- dial: pot arc ---- */
+  var POT = CONFIG.mock.pot, THRESHOLD = CONFIG.threshold;
+  var bImg = document.getElementById('bannerImg');
+  if (CONFIG.banner) {
+    bImg.onload  = function(){ bImg.parentNode.classList.add('has-img'); };
+    bImg.onerror = function(){ bImg.removeAttribute('src'); };  // fall back to the frame
+    bImg.src = CONFIG.banner;
+  }
+  var pct = Math.min(POT / THRESHOLD, 1);
+  var R = 176, C = 2 * Math.PI * R;
+  var arc = document.getElementById('potArc');
+  arc.setAttribute('stroke-dasharray', (C * pct).toFixed(1) + ' ' + C.toFixed(1));
+  arc.style.setProperty('--len', (C * pct).toFixed(1));
+  if (reduce){ arc.style.strokeDashoffset = 0; arc.style.animation = 'none'; }
+
+  /* ---- dial: pointer tracks the arc edge ---- */
+  var needle = document.getElementById('needle');
+  needle.style.transition = reduce ? 'none' : 'transform 1.3s cubic-bezier(.22,1,.36,1)';
+  needle.style.transform = 'rotate(0deg)';
+  requestAnimationFrame(function(){
+    needle.style.transform = 'rotate(' + (pct * 360).toFixed(2) + 'deg)';
+  });
+
+  /* ---- dial: bezel ticks ---- */
+  var ticks = document.getElementById('ticks');
+  for (var i = 0; i < 48; i++){
+    var a = (i / 48) * Math.PI * 2 - Math.PI / 2;
+    var inner = (i % 4 === 0) ? 185 : 190;
+    ticks.appendChild(mk('line', {
+      'class':'tick',
+      x1:(200 + Math.cos(a) * inner).toFixed(1), y1:(200 + Math.sin(a) * inner).toFixed(1),
+      x2:(200 + Math.cos(a) * 194).toFixed(1),   y2:(200 + Math.sin(a) * 194).toFixed(1)
+    }));
+  }
+
+  /* ---- dial: one dot per completed distribution ---- */
+  var EPOCHS = 13, rings = [160, 144, 128];
+  var dots = document.getElementById('epochDots');
+  for (i = 0; i < EPOCHS; i++){
+    a = (i % 12 / 12) * Math.PI * 2 - Math.PI / 2;
+    var r = rings[Math.floor(i / 12) % rings.length];
+    var last = (i === EPOCHS - 1);
+    var d = mk('circle', {
+      'class':'epoch-dot' + (last ? ' cur' : '') + (reduce ? '' : ' fadein'),
+      cx:(200 + Math.cos(a) * r).toFixed(1),
+      cy:(200 + Math.sin(a) * r).toFixed(1),
+      r: last ? 5 : 3.2
+    });
+    if (!reduce) d.style.setProperty('--d', (0.5 + i * 0.045).toFixed(2) + 's');
+    dots.appendChild(d);
+  }
+
+  /* ---- schematic: holder marks ---- */
+  function holderRow(target, n, x0, y0, step, perRow){
+    var g = document.getElementById(target);
+    if (!g) return;
+    for (var j = 0; j < n; j++){
+      var col = j % perRow, row = Math.floor(j / perRow);
+      var rect = mk('rect', {
+        x: x0 + col * step, y: y0 + row * step,
+        width:12, height:12,
+        fill:'var(--gold)', stroke:'var(--ink)', 'stroke-width':'.8'
+      });
+      if (!reduce){ rect.setAttribute('class','fadein');
+        rect.style.setProperty('--d', (1.1 + j * 0.03).toFixed(2) + 's'); }
+      g.appendChild(rect);
+    }
+  }
+  holderRow('holdersH', 25, 320, 270, 26, 25);
+  holderRow('holdersV', 24, 30, 636, 26, 12);
+
+  /* ---- schematic: flow dots travel the wires ---- */
+  if (!reduce){
+    var pairs = [
+      [document.getElementById('fd1'), 'cx', 280, 80],
+      [document.getElementById('fd2'), 'cx', 690, 80],
+      [document.getElementById('fv1'), 'cy', 152, 44],
+      [document.getElementById('fv2'), 'cy', 420, 44]
+    ];
+    var t0 = performance.now();
+    (function loop(now){
+      var p = ((now - t0) / 2600) % 1;
+      for (var k = 0; k < pairs.length; k++){
+        var it = pairs[k];
+        if (it[0]) it[0].setAttribute(it[1], (it[2] + p * it[3]).toFixed(1));
+      }
+      requestAnimationFrame(loop);
+    })(t0);
+  }
+
+  /* ---- ledger ---- */
+  var COLS = ['Epoch','Snapshot block','ETH in','HMM bought','Holders','Receipt'];
+  var ROWS = [
+    [14, '—',          '0.34', null,     '—',   null],
+    [13, '24,918,204', '0.52', '70,120', '487', '0x9a3f…7c21'],
+    [12, '24,842,117', '0.50', '67,880', '471', '0x2b81…44de'],
+    [11, '24,769,502', '0.54', '72,405', '463', '0xf10c…9a07'],
+    [10, '24,691,338', '0.50', '66,720', '448', '0x77ad…1b52'],
+    [9,  '24,610,884', '0.53', '69,190', '432', '0xc4e2…08f9']
+  ];
+  var body = document.getElementById('ledgerBody');
+  ROWS.forEach(function(rw){
+    var open = (rw[5] === null);
+    var cells = [
+      rw[0] + (open ? ' · open' : ''),
+      rw[1],
+      open ? rw[2] : '<span class="blu">' + rw[2] + ' ETH</span>',
+      open ? '<span class="muted">pending</span>' : '<span class="chip">' + rw[3] + '</span>',
+      rw[4],
+      open ? '<span class="muted">—</span>' : '<a class="tx" href="#">' + rw[5] + '</a>'
+    ];
+    var tr = document.createElement('tr');
+    tr.innerHTML = cells.map(function(c, idx){
+      return '<td class="n" data-l="' + COLS[idx] + '">' + c + '</td>';
+    }).join('');
+    body.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>
