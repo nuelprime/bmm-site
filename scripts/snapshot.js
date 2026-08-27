@@ -10,7 +10,7 @@ import { base } from "viem/chains";
 import fs from "fs";
 
 const RPC = process.env.BASE_RPC;
-const BMM = "0x0000000000000000000000000000000000000000".toLowerCase(); // <-- token
+const BMM = "0x3c9831aaa34ffbd84d9956ac050ba347cdebdba3"; // Based Thinking Cat
 const DEPLOY_BLOCK = 0n;                                                // <-- deploy block
 const ZERO = "0x0000000000000000000000000000000000000000";
 
@@ -19,9 +19,12 @@ const ZERO = "0x0000000000000000000000000000000000000000";
 const EXCLUDE = new Set([
   ZERO,
   "0x000000000000000000000000000000000000dead",
-  // "0x...", // BMM/WETH V3 pool
-  // "0x...", // launchpad fee/vault contract
-  // "0x...", // your treasury wallet
+  // Uniswap v4 keeps every pool's inventory in one singleton PoolManager.
+  // It held 100% of supply at launch. Miss this and it eats the distribution.
+  "0x498581fF718922c3f8e6A244956aF099B2652b2b",
+  "0x9982538f41f2ae29ddb9d3d9307010052984fdbb", // Doppler fees contract
+  "0xBDF938149ac6a781F94FAa0ed45E6A0e984c6544", // Fees Manager / initializer
+  "0xD795eB3C59718f615E13a9d1BF7C8bf4F1F5A73B", // treasury
 ].map((a) => a.toLowerCase()));
 
 const DUST = 1_000_000_000_000_000n; // 0.001 BMM min to be eligible

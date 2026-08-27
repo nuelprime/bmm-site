@@ -466,8 +466,8 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
     </div>
     <div class="vbox">
       <h3>BMM token · Base</h3>
-      <span class="addr" style="color:var(--ink-35);border:0">Set at launch</span>
-      <p>Fixed supply. No mint function after deploy. No transfer tax.</p>
+      <a class="addr" href="https://basescan.org/address/0x3c9831aaa34ffbd84d9956ac050ba347cdebdba3" target="_blank" rel="noopener">0x3c9831aaa34ffbd84d9956ac050ba347cdebdba3</a>
+      <p>100,000,000,000 fixed supply, all of it seeded into the pool. No mint function, no pause, no transfer tax, and no creator allocation.</p>
     </div>
     <div class="vbox">
       <h3>HMM token · Robinhood Chain</h3>
@@ -495,7 +495,7 @@ var CONFIG = {
   threshold: 0.01,   // full pot, in ETH. not shown on the page. raise as holders grow.
   treasury:  '0xD795eB3C59718f615E13a9d1BF7C8bf4F1F5A73B',   // Base wallet, holds the pot
   distributor:'0xB1e5730fA92c4D68b0357cE1fD4a9B2e6C08D71A',  // RH contract, pushes HMM
-  bmm:       '0x4Cc0A15e2fB79d31a6E8b04537cD91Ff2a6B8E05',   // Base
+  bmm:       '0x3c9831aaa34ffbd84d9956ac050ba347cdebdba3',   // Base
   hmm:       '0x9F3d2Ba14c6E8057dB29fA4e1C70b5D83eA26F14',   // RH
   baseRpc:   'https://mainnet.base.org',
   links: {
@@ -505,11 +505,11 @@ var CONFIG = {
     repo:  ''    // https://github.com/nuelprime/...
   },
   rhRpc:     '',                    // Robinhood Chain RPC
-  launched: false,   // flip to true on launch day
+  launched: true,
   // null renders as an em dash. counters are 0 because 0 is true.
   live: { pot:0, priceHmm:null, hmmUsd:null, bmmUsd:null, mcap:null,
           chg24:null, paid:0, hmmTotal:0, holders:0, ethTotal:0 },
-  poolId:  '',       // bytes32 poolId, from the Bankr deploy response
+  poolId:  '0xb82d024ed0063e5eb03ce84a3ad8299eef08de73b7342b207eb4d094f757c40e',
   pollMs:  45000,    // bankr asks for no more than one poll per 30s
   // newest first. push one per distribution and the ledger + counters follow.
   epochs: []   // {epoch, block, eth, hmm, holders, tx}
@@ -547,7 +547,7 @@ var CONFIG = {
   function put(id, v){ var e = document.getElementById(id); if (e) e.textContent = dash(v); }
 
   var qBlock = document.querySelector('.quote');
-  if (qBlock && !CONFIG.launched) qBlock.style.display = 'none';
+  if (qBlock && !L.priceHmm) qBlock.style.display = 'none';
 
   put('pxMain', L.priceHmm);
   put('pxUsd',  L.bmmUsd ? '$' + L.bmmUsd : null);
