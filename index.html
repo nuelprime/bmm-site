@@ -89,8 +89,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 
 /* ---------- hero ---------- */
-.hero::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
-  border-radius:var(--r);
+.hero::before{content:'';position:absolute;top:0;bottom:0;left:0;right:0;z-index:-1;
+  pointer-events:none;border-radius:var(--r);
   background:linear-gradient(104deg,#0A0F06E6 0%,#0A0F06AD 36%,#0A0F0647 58%,transparent 76%)}
 @media(max-width:900px){
   .hero::before{background:linear-gradient(to bottom,transparent 0%,#0A0F0666 34%,#0A0F06E0 62%,#0A0F06F2 100%)}
@@ -247,10 +247,16 @@ footer small{font-size:10px;color:var(--ink-35);letter-spacing:.08em}
 }
 :focus-visible{outline:2.5px solid var(--base-line);outline-offset:3px}
 
+@media(max-width:1420px){
+  /* explicit side margins so the rounded corners are actually visible */
+  .sheet, header{margin-left:var(--gap);margin-right:var(--gap)}
+  .hero{padding-left:calc(var(--pad) + var(--gap));padding-right:calc(var(--pad) + var(--gap))}
+  .hero::before{left:var(--gap);right:var(--gap)}
+}
 @media(max-width:640px){
-  :root{--gap:8px}
-  .sheet{border-left:0;border-right:0;border-radius:0}
-  header{border-left:0;border-right:0;border-radius:0}
+  :root{--gap:10px;--r:18px;--r-sm:12px}
+  .hero{padding-left:var(--pad);padding-right:var(--pad)}
+  .hero::before{left:var(--gap);right:var(--gap)}
 }
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;gap:30px}
@@ -738,7 +744,7 @@ var CONFIG = {
     }
   }
   holderRow('holdersH', 25, 320, 270, 26, 25);
-  holderRow('holdersV', 24, 30, 636, 26, 12);
+  holderRow('holdersV', 12, 30, 636, 26, 12);
 
   /* ---- schematic: flow dots travel the wires ---- */
   if (!reduce){
